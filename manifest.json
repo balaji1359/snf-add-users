@@ -2,10 +2,11 @@
     "manifest_version": 3,
     "name": "XPath Content Extractor",
     "version": "1.0",
-    "description": "Extracts content from a specific XPath and stores results",
+    "description": "Extracts content from a specific XPath",
     "permissions": [
       "activeTab",
       "scripting",
+      "tabs",
       "storage"
     ],
     "host_permissions": [

@@ -2,11 +2,25 @@
 <html>
 <head>
   <title>XPath Content Extractor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
   <style>
-    body { width: 300px; padding: 10px; }
+    body { width: 600px; padding: 10px; font-family: Arial, sans-serif; }
     #content, #storedItems { margin-top: 10px; }
     #storedItems { max-height: 200px; overflow-y: auto; }
     .delete-btn { margin-left: 5px; }
+    .code-block-container { position: relative; }
+    pre { background-color: #f4f4f4; padding: 10px; border-radius: 4px; margin-top: 20px; }
+    code { font-family: 'Courier New', Courier, monospace; }
+    .copy-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .copy-btn:hover { opacity: 0.7; }
   </style>
 </head>
 <body>

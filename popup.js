@@ -1,58 +1,46 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const extractButton = document.getElementById('extract');
-    const contentDiv = document.getElementById('content');
-    const storedItemsList = document.getElementById('storedItems');
-    const clearAllButton = document.getElementById('clearAll');
-    
-    extractButton.addEventListener('click', () => {
-      contentDiv.textContent = 'Extracting content...';
-      
-      chrome.runtime.sendMessage({action: "getXPathContent"}, (response) => {
-        if (chrome.runtime.lastError) {
-          contentDiv.textContent = 'Error: ' + chrome.runtime.lastError.message;
-        } else if (response) {
-          contentDiv.textContent = response.content || response.error || "Unknown response";
-          if (response.content) {
-            loadStoredItems();  // Refresh the list after new content is added
-          }
-        } else {
-          contentDiv.textContent = "No response received";
-        }
-      });
-    });
-  
-    clearAllButton.addEventListener('click', () => {
-      if (confirm('Are you sure you want to delete all stored items?')) {
-        chrome.storage.local.clear(() => {
-          loadStoredItems();
-        });
+document.getElementById('extract').addEventListener('click', () => {
+    // Send message to background to extract XPath content
+    chrome.runtime.sendMessage({ action: "getXPathContent" }, (response) => {
+      if (response && response.content) {
+        displayContent(response.content);
+      } else {
+        displayContent("No content found or error occurred: " + (response.error || "Unknown error"));
       }
     });
-  
-    function loadStoredItems() {
-      chrome.storage.local.get(null, (items) => {
-        storedItemsList.innerHTML = '';
-        for (let [key, value] of Object.entries(items)) {
-          const li = document.createElement('li');
-          li.textContent = `${key}: ${value}`;
-          
-          const deleteButton = document.createElement('button');
-          deleteButton.textContent = 'Delete';
-          deleteButton.className = 'delete-btn';
-          deleteButton.addEventListener('click', () => deleteItem(key));
-          
-          li.appendChild(deleteButton);
-          storedItemsList.appendChild(li);
-        }
-      });
-    }
-  
-    function deleteItem(key) {
-      chrome.storage.local.remove(key, () => {
-        loadStoredItems();
-      });
-    }
-  
-    // Load stored items when popup is opened
-    loadStoredItems();
   });
+  
+  document.getElementById('clearAll').addEventListener('click', () => {
+    chrome.runtime.sendMessage({ action: "clearAll" }, () => {
+      document.getElementById('storedItems').innerHTML = '';
+    });
+  });
+  
+  function displayContent(content) {
+    const contentDiv = document.getElementById('content');
+    contentDiv.innerHTML = `<pre><code>${content}</code></pre>`;
+    // Highlight the code block (optional with highlight.js)
+    hljs.highlightAll();
+    
+    // Store the content
+    storeContent(content);
+  }
+  
+  function storeContent(content) {
+    const storedItems = document.getElementById('storedItems');
+    const listItem = document.createElement('li');
+    listItem.innerText = content.substring(0, 50) + '...'; // Show a snippet of the content
+    const deleteButton = document.createElement('button');
+    deleteButton.innerText = 'Delete';
+    deleteButton.classList.add('delete-btn');
+    deleteButton.addEventListener('click', () => {
+      chrome.runtime.sendMessage({ action: "deleteItem", key: listItem.dataset.key }, () => {
+        listItem.remove();
+      });
+    });
+    listItem.appendChild(deleteButton);
+    storedItems.appendChild(listItem);
+  
+    // Send to background script to store content
+    chrome.runtime.sendMessage({ action: "storeContent", content });
+  }
+  
