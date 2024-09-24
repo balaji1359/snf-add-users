@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>XPath Content Extractor</title>
+  <style>
+    body { width: 300px; padding: 10px; }
+    #content, #storedItems { margin-top: 10px; }
+    #storedItems { max-height: 200px; overflow-y: auto; }
+    .delete-btn { margin-left: 5px; }
+  </style>
+</head>
+<body>
+  <button id="extract">Extract Content</button>
+  <div id="content"></div>
+  <h3>Stored Items:</h3>
+  <button id="clearAll">Clear All</button>
+  <ul id="storedItems"></ul>
+  <script src="popup.js"></script>
+</body>
+</html>
